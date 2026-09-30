@@ -10,11 +10,9 @@ from src.personal_pattern import get_personal_pattern
 # ============================================================
 
 AI2_DIR = Path(__file__).resolve().parent.parent
-CRAVESHIELD_DIR = AI2_DIR.parent
 
-MODEL_DIR = CRAVESHIELD_DIR / "models"
+MODEL_DIR = AI2_DIR / "models"
 DATA_DIR = AI2_DIR / "data"
-
 
 # ============================================================
 # LOAD TRAINED MODELS
