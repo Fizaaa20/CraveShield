@@ -13,7 +13,7 @@ from risk_predictor import predict_risk
 app = FastAPI(
     title="CraveShield A1-1 Risk Predictor API",
     description="Backend API for the Personalized Craving Risk Predictor",
-    version="1.0.0"
+    version="1.1.0"
 )
 
 
@@ -70,8 +70,9 @@ def home():
 @app.post("/predict")
 def predict(data: RiskInput):
 
-    # Prepare data exactly in the format
-    # expected by the Random Forest model.
+    # --------------------------------------------------------
+    # Prepare user data
+    # --------------------------------------------------------
 
     user_data = pd.DataFrame([{
 
@@ -101,10 +102,15 @@ def predict(data: RiskInput):
 
 
     # ========================================================
-    # RANDOM FOREST PREDICTION
+    # RANDOM FOREST + K-MEANS
     # ========================================================
 
-    probability, risk_score, risk_level = predict_risk(
+    (
+        probability,
+        risk_score,
+        risk_level,
+        behavior_cluster
+    ) = predict_risk(
         user_data
     )
 
@@ -113,7 +119,9 @@ def predict(data: RiskInput):
     # PERSONAL TREND
     # ========================================================
 
-    difference = risk_score - data.previous_risk
+    difference = (
+        risk_score - data.previous_risk
+    )
 
 
     if difference > 10:
@@ -245,6 +253,10 @@ def predict(data: RiskInput):
 
         "status": "success",
 
+        # ----------------------------------------------------
+        # EXISTING RANDOM FOREST RESULTS
+        # ----------------------------------------------------
+
         "risk_score": risk_score,
 
         "risk_level": risk_level,
@@ -261,6 +273,22 @@ def predict(data: RiskInput):
         "risk_factors": risk_factors,
 
         "ai_analysis": analysis,
+
+
+        # ----------------------------------------------------
+        # NEW K-MEANS INFORMATION
+        # ----------------------------------------------------
+
+        "behavior_cluster": behavior_cluster,
+
+        "clustering_method": "K-Means",
+
+        "elbow_method_used": True,
+
+
+        # ----------------------------------------------------
+        # CHECK-IN DATA
+        # ----------------------------------------------------
 
         "check_in": {
 
